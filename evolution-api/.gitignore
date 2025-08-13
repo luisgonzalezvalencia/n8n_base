@@ -1,0 +1,15 @@
+# Archivos de configuración con datos sensibles
+.env
+.env.local
+.env.production
+
+# Datos de Evolution API
+evolution_instances/
+evolution_store/
+
+# Logs de Docker
+*.log
+
+# Archivos temporales
+.DS_Store
+Thumbs.db
