@@ -1,5 +1,7 @@
 # Proyecto n8n con Evolution API
 
+**Español** | [English](Readme.en.md)
+
 Este proyecto integra **n8n** (herramienta de automatización de flujos de trabajo), **Evolution API** (API de WhatsApp) y **ngrok** (túneles seguros) utilizando Docker para crear un entorno completo de automatización de mensajería.
 
 ## 🚀 Características
