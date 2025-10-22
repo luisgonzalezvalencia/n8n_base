@@ -62,6 +62,7 @@ services:
     environment:
       # Configuración del servidor
       - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
+      - CUSTOM_DOMAIN=${CUSTOM_DOMAIN}
       - SERVER_TYPE=http
       - SERVER_PORT=8080
       - SERVER_URL=http://localhost:8080
@@ -111,7 +112,7 @@ services:
       # QR Code
       - QRCODE_LIMIT=10
       - QRCODE_COLOR=#175197
-      - CONFIG_SESSION_PHONE_VERSION=2.3000.1023204200
+      - CONFIG_SESSION_PHONE_VERSION=2.3000.1028524044
       
       # Webhooks
       - WEBHOOK_GLOBAL_URL=

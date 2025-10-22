@@ -1,68 +1,38 @@
 #!/bin/bash
 
-echo "🏁 Entrypoint iniciado"
-
-# Autenticar ngrok si hay token
+# Agregar authtoken si está definido
 if [[ -n "$NGROK_AUTHTOKEN" ]]; then
   echo "🔐 Autenticando ngrok..."
   ngrok config add-authtoken "$NGROK_AUTHTOKEN"
-else
-  echo "⚠️ NGROK_AUTHTOKEN no configurado. ngrok podría no funcionar correctamente."
 fi
 
-# Iniciar ngrok en segundo plano y redirigir su salida a un archivo de log
-echo "🚀 Iniciando ngrok..."
-ngrok http 8080 --log=stdout > /tmp/ngrok.log 2>&1 &
+# Iniciar ngrok con dominio personalizado en segundo plano
+echo "🚀 Iniciando ngrok con dominio personalizado: $CUSTOM_DOMAIN"
+ngrok http 8080 --domain="$CUSTOM_DOMAIN" > /tmp/ngrok.log &
+sleep 3
 
-# Esperar un poco para que ngrok se inicie y el túnel comience a establecerse
-sleep 5
-
-# Obtener la URL pública
+# Verificar que el túnel esté activo
 NGROK_URL=""
-for i in {1..15}; do
-  NGROK_URL=$(curl -s http://localhost:4040/api/tunnels | grep -o 'https://[a-zA-Z0-9.-]*\.ngrok-free\.app' | head -n 1)
-  
+for i in {1..10}; do
+  # Verificar si el dominio personalizado está activo
+  NGROK_URL=$(curl -s http://localhost:4040/api/tunnels | grep -o "https://$CUSTOM_DOMAIN" | head -n 1)
   if [[ -n "$NGROK_URL" ]]; then
     break
   fi
   echo "⌛ Esperando ngrok... intento $i"
-  sleep 2
+  sleep 1
 done
 
-if [[ -n "$NGROK_URL" ]]; then
-  export SERVER_URL="$NGROK_URL"
-  echo "✅ URL pública obtenida: $NGROK_URL"
-  echo "🌐 Evolution API estará disponible en: $NGROK_URL"
-else
-  echo "❌ No se pudo obtener la URL de ngrok después de varios intentos."
-  echo "⚠️ La Evolution API se iniciará con la URL predeterminada: http://localhost:8080"
-  export SERVER_URL="http://localhost:8080"
+if [[ -z "$NGROK_URL" ]]; then
+  echo "❌ No se pudo conectar con el dominio personalizado: $CUSTOM_DOMAIN"
+  echo "📋 Log de ngrok:"
+  cat /tmp/ngrok.log
+  exit 1
 fi
 
-# Mostrar el contenido del log de ngrok para depuración
-echo "--- Log de ngrok ---"
-cat /tmp/ngrok.log
-echo "--------------------"
+echo "✅ URL pública: $NGROK_URL"
 
-# Diagnóstico: Listar contenido del directorio /evolution
-echo "--- Contenido de /evolution ---"
-ls -l /evolution
-echo "-------------------------------"
-
-# Diagnóstico: Listar contenido del directorio /evolution/src (si existe)
-echo "--- Contenido de /evolution/src ---"
-ls -l /evolution/src 2>/dev/null || echo "Directorio /evolution/src no encontrado o vacío."
-echo "-----------------------------------"
-
-# Diagnóstico: Listar contenido del directorio /evolution/dist (si existe)
-echo "--- Contenido de /evolution/dist ---"
-ls -l /evolution/dist 2>/dev/null || echo "Directorio /evolution/dist no encontrado o vacío."
-echo "------------------------------------"
-
-# Diagnóstico: Listar contenido del directorio /evolution/prisma (si existe)
-echo "--- Contenido de /evolution/prisma ---"
-ls -l /evolution/prisma 2>/dev/null || echo "Directorio /evolution/prisma no encontrado o vacío."
-echo "--------------------------------------"
+export SERVER_URL="$NGROK_URL"
 
 
 # --- Reintroduciendo Ejecutar migraciones de Prisma con el nombre de esquema correcto ---
