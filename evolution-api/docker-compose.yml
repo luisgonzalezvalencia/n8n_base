@@ -53,7 +53,7 @@ services:
       redis:
         condition: service_healthy
     ports:
-      - "8080:8080"
+      - "8081:8081"
     volumes:
       - evolution_instances:/evolution/instances
       - evolution_store:/evolution/store
@@ -64,8 +64,8 @@ services:
       - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN}
       - CUSTOM_DOMAIN=${CUSTOM_DOMAIN}
       - SERVER_TYPE=http
-      - SERVER_PORT=8080
-      - SERVER_URL=http://localhost:8080
+      - SERVER_PORT=8081
+      - SERVER_URL=http://localhost:8081
       - CORS_ORIGIN=*
       - CORS_METHODS=POST,GET,PUT,DELETE
       - CORS_CREDENTIALS=true

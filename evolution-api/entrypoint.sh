@@ -8,7 +8,7 @@ fi
 
 # Iniciar ngrok con dominio personalizado en segundo plano
 echo "🚀 Iniciando ngrok con dominio personalizado: $CUSTOM_DOMAIN"
-ngrok http 8080 --domain="$CUSTOM_DOMAIN" > /tmp/ngrok.log &
+ngrok http 8081 --domain="$CUSTOM_DOMAIN" > /tmp/ngrok.log &
 sleep 3
 
 # Verificar que el túnel esté activo
